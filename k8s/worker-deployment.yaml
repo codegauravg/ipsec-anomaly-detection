@@ -1,20 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ipsec-anomaly-worker
+  name: ipsec-worker
+  labels:
+    app: ipsec-worker
 spec:
-  replicas: 3
+  replicas: 3 # Scale this up based on SQS queue depth (KEDA is great for this)
   selector:
     matchLabels:
-      app: ipsec-anomaly-worker
+      app: ipsec-worker
   template:
     metadata:
       labels:
-        app: ipsec-anomaly-worker
+        app: ipsec-worker
     spec:
       containers:
       - name: worker
-        image: your-registry/ipsec-worker:latest
+        image: your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/ipsec-worker:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
         env:
+        - name: SQS_QUEUE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: ipsec-config
+              key: SQS_QUEUE_URL
         - name: REDIS_URL
-          value: "redis-master:6379"
+          valueFrom:
+            secretKeyRef:
+              name: ipsec-secrets
+              key: REDIS_URL
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: ipsec-secrets
+              key: DATABASE_URL

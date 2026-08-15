@@ -1,4 +1,3 @@
-package worker
 package main
 
 import (

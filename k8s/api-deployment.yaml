@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ipsec-api
+  labels:
+    app: ipsec-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ipsec-api
+  template:
+    metadata:
+      labels:
+        app: ipsec-api
+    spec:
+      containers:
+      - name: api
+        image: your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/ipsec-api:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: ipsec-config
+              key: NODE_ENV
+        - name: CLIENT_ORIGIN
+          valueFrom:
+            configMapKeyRef:
+              name: ipsec-config
+              key: CLIENT_ORIGIN
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: ipsec-secrets
+              key: DATABASE_URL
+        # Health checks to ensure traffic isn't routed to dead pods
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 20
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ipsec-api-service
+  labels:
+    app: ipsec-api
+spec:
+  type: ClusterIP
+  selector:
+    app: ipsec-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000

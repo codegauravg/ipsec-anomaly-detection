@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ipsec-web
+  labels:
+    app: ipsec-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ipsec-web
+  template:
+    metadata:
+      labels:
+        app: ipsec-web
+    spec:
+      containers:
+      - name: web
+        image: your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/ipsec-web:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "250m"
+            memory: "128Mi"
+        # Nginx health check
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ipsec-web-service
+  labels:
+    app: ipsec-web
+spec:
+  type: LoadBalancer # Automatically creates an AWS ELB/NLB
+  selector:
+    app: ipsec-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
