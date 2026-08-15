@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ipsec-anomaly-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ipsec-anomaly-worker
+  template:
+    metadata:
+      labels:
+        app: ipsec-anomaly-worker
+    spec:
+      containers:
+      - name: worker
+        image: your-registry/ipsec-worker:latest
+        env:
+        - name: REDIS_URL
+          value: "redis-master:6379"
