@@ -1,0 +1,10 @@
+{
+  "https://sqs.us-east-1.amazonaws.com/123456789012/ipsec-anomaly-queue": "https://sqs.YOUR-REGION.amazonaws.com/YOUR-ACCOUNT-ID/YOUR-QUEUE-NAME",
+  "http://ipsec-dashboard.local": "https://your-production-dashboard-domain.com",
+  "postgres://admin:password@postgres-service.default.svc.cluster.local:5432/ipsec": "postgres://admin:YOUR_SECURE_PASSWORD@your-aurora-cluster-endpoint.rds.amazonaws.com:5432/ipsec",
+  "redis-master.default.svc.cluster.local:6379": "your-redis-cluster-endpoint.cache.amazonaws.com:6379",
+  "your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/ipsec-worker:latest": "YOUR-ACCOUNT-ID.dkr.ecr.YOUR-REGION.amazonaws.com/ipsec-worker:latest",
+  "your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/ipsec-api:latest": "YOUR-ACCOUNT-ID.dkr.ecr.YOUR-REGION.amazonaws.com/ipsec-api:latest",
+  "your-aws-account-id.dkr.ecr.us-east-1.amazonaws.com/ipsec-web:latest": "YOUR-ACCOUNT-ID.dkr.ecr.YOUR-REGION.amazonaws.com/ipsec-web:latest",
+  "config.WithRegion(\"us-east-1\")": "config.WithRegion(\"YOUR-REGION\")"
+}
